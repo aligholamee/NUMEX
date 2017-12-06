@@ -33,6 +33,8 @@
 
 ; Converts racket lists to numex lists(type of integer specifically)
 (define (racketlist->numexlist xs) (cond [(null? xs) (munit)]
-                                          [true (apair (int (car xs)) (racketlist->numexlist (cdr xs)))]))
+                                         [true (apair (int (car xs)) (racketlist->numexlist (cdr xs)))]))
 
-                                          
+; Converts the numex lists to racket lists(type of integer specifically)
+(define (numexlist->racketlist xs) (cond [(munit? xs) null]
+                                         [true (cons (int-num (apair-e1 xs)) (numexlist->racketlist (apair-e2 xs)))]))
