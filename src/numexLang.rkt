@@ -38,3 +38,30 @@
 ; Converts the numex lists to racket lists(type of integer specifically)
 (define (numexlist->racketlist xs) (cond [(munit? xs) null]
                                          [true (cons (int-num (apair-e1 xs)) (numexlist->racketlist (apair-e2 xs)))]))
+
+;; Lookup for a variable in an environment
+(define (envlookup env str) ;; env is a racket list apparantly :D
+  (cond [(null? env) (error "unbound variable during evaluation" str)]
+        [(eq? (car env) str) str] ;; return if found 
+        [true (envlookup (cdr env) str)]
+		))
+
+; The helper function of the eval-exp
+(define (eval-under-env e env)
+  (cond [(var? e) 
+         (envlookup env (var-string e))]
+        [(add? e) 
+         (let ([v1 (eval-under-env (add-e1 e) env)]
+               [v2 (eval-under-env (add-e2 e) env)])
+           (if (and (int? v1)
+                    (int? v2))
+               (int (+ (int-num v1) 
+                       (int-num v2)))
+               (error "NUMEX addition applied to non-number")))]
+        ;; CHANGE add more cases here
+        [#t (error (format "bad NUMEX expression: ~v" e))]))
+
+;; Interprets the given prgoram(as an expression || a parse tree)
+(define (eval-exp e)
+  (eval-under-env e null))
+        
