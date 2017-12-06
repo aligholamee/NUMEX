@@ -91,6 +91,13 @@
              [(eq? (int-num v1) 0) (eval-under-env (ifzero-e2 e) env)]
              [true (eval-under-env (ifzero-e3 e) env)]))]
         
+        ; If greater condition
+        [(ifgthan? e)
+         (let ([v1 (eval-under-env (isgthan-e1 e) env)]
+               [v2 (eval-under-env (isgthan-e1 e) env)])
+           (cond
+             [(< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env)]
+             [true (eval-under-env (ifgthan-e4 e) env)]))]
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
