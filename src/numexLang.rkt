@@ -70,7 +70,7 @@
          (let ([v1 (eval-under-env (neg-e1 e) env)])
            (if (int? v1) (int (- (int-num v1)))
                (error "NUMEX negation applied to non-number")))]
-        [(int? e) (int-num e)]
+        [(int? e) e]
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
 ;; Interprets the given prgoram(as an expression || a parse tree)
