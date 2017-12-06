@@ -20,7 +20,7 @@
 (struct neg  (e1)     #:transparent)  ;; negate the expression
 (struct islthan (e1 e2) #:transparent) ;; is less than
 (struct ifzero (e1 e2 e3) #:transparent) ;; tests e1
-(struct isgthan (e1 e2 e3 e4 e5) #:transparent) ;; tests if e1 is greater than e2
+(struct ifgthan (e1 e2 e3 e4) #:transparent) ;; tests if e1 is greater than e2
 (struct fun  (nameopt formal body) #:transparent) ;; a recursive(?) 1-argument function
 (struct call (funexp actual)       #:transparent) ;; function call
 (struct munit   ()      #:transparent) ;; unit value -- good for ending a list
@@ -93,8 +93,8 @@
         
         ; If greater condition
         [(ifgthan? e)
-         (let ([v1 (eval-under-env (isgthan-e1 e) env)]
-               [v2 (eval-under-env (isgthan-e1 e) env)])
+         (let ([v1 (eval-under-env (ifgthan-e1 e) env)]
+               [v2 (eval-under-env (ifgthan-e1 e) env)])
            (cond
              [(< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env)]
              [true (eval-under-env (ifgthan-e4 e) env)]))]
