@@ -16,7 +16,7 @@
 (struct int  (num)    #:transparent)  ;; a constant number, e.g., (int 17)
 (struct add  (e1 e2)  #:transparent)  ;; add two expressions
 (struct mult (e1 e2)  #:transparent)  ;; multiply two expressions
-(strcut neg  (e1)     #:transparent)  ;; negate the expression
+(struct neg  (e1)     #:transparent)  ;; negate the expression
 (struct islthan (e1 e2) #:transparent) ;; is less than
 (struct ifzero (e1 e2 e3) #:transparent) ;; tests e1
 (struct isgthan (e1 e2 e3 e4 e5) #:transparent ;; tests if e1 is greater than e2
