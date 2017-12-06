@@ -83,6 +83,14 @@
           (cond
             [(< (int-num v1) (int-num v2)) (int 1)]
             [true (int 0)]))]
+
+        ; Is zero condition
+        [(ifzero? e)
+         (let ([v1 (eval-under-env (ifzero-e1 e) env)])
+           (cond
+             [(eq? (int-num v1) 0) (eval-under-env (ifzero-e2 e) env)]
+             [true (eval-under-env (ifzero-e3 e) env)]))]
+        
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
