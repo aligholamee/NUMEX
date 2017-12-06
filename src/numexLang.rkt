@@ -58,7 +58,19 @@
                (int (+ (int-num v1) 
                        (int-num v2)))
                (error "NUMEX addition applied to non-number")))]
-        ;; CHANGE add more cases here
+        [(mult? e)
+         (let ([v1 (eval-under-env (mult-e1 e) env)]
+               [v2 (eval-under-env (mult-e2 e) env)])
+           (if (and (int? v1)
+                    (int? v2))
+               (int (* (int-num v1)
+                       (int-num v2)))
+               (error "NUMEX multiplication applied to non-number")))]
+        [(neg? e)
+         (let ([v1 (eval-under-env (neg-e1 e) env)])
+           (if (int? v1) (int (- (int-num v1)))
+               (error "NUMEX negation applied to non-number")))]
+        [(int? e) (int-num e)]
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
 ;; Interprets the given prgoram(as an expression || a parse tree)
