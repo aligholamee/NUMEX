@@ -135,6 +135,13 @@
            (cond
              [(apair? v1) (apair-e2 v1)]
              [true (error (format "Dude. Pass a pair within the second."))]))]
+
+        ; ismunit handler
+        [(ismunit? e)
+         (let ([v1 (eval-under-env (ismunit-e e) env)])
+           (cond
+             [(munit? v1) (int 1)]
+             [true (int 0)]))]
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
