@@ -107,13 +107,13 @@
 
         ; Function declaration
         [(fun? e)
-         (createNewEnv env (closure env e))]
+         (eval-under-env e (cons env (closure env e)))]
 
         ; Function call with respect to the generated closures
         [(call? e)
          (let ([funcName (eval-under-env (call-funexp e) env)])
            (cond
-             [(closure? funcName (lookup env funcName)) (eval-under-env (closure-fun-body funcName) env)]
+             [(closure? funcName (envlookup env funcName)) (eval-under-env ((closure-fun funcName) env))]
              [true (error (format "Function closure not found!"))]))]
 
         [#t (error (format "bad NUMEX expression: ~v" e))]))
