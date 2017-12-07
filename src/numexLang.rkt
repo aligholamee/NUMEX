@@ -41,8 +41,9 @@
 
 ;; Lookup for a variable in an environment
 (define (envlookup env str) ;; env is a racket list apparantly :D
-  (cond [(null? env) (error "unbound variable during evaluation" str)]
-        [(eq? (car env) str) str] ;; return if found 
+  (define temp (car env))
+  (cond [(null? temp) (error "unbound variable during evaluation" str)]
+        [(eq? (var-string temp) str) temp]
         [true (envlookup (cdr env) str)]
 		))
 
@@ -66,6 +67,7 @@
                (int (+ (int-num v1) 
                        (int-num v2)))
                (error "NUMEX addition applied to non-number")))]
+        
         ; Multiplication
         [(mult? e)
          (let ([v1 (eval-under-env (mult-e1 e) env)]
@@ -75,6 +77,7 @@
                (int (* (int-num v1)
                        (int-num v2)))
                (error "NUMEX multiplication applied to non-number")))]
+        
         ; Negation
         [(neg? e)
          (let ([v1 (eval-under-env (neg-e1 e) env)])
