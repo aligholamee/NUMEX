@@ -12,7 +12,7 @@
 (provide (all-defined-out)) ;; so we can put tests in a second file
 
 ;; definition of structures for NUMEX programs
-(struct var  (string) #:transparent)  ;; a variable
+(struct var  (string value) #:transparent)  ;; a variable
 (struct int  (num)    #:transparent)  ;; a constant number, e.g., (int 17)
 (struct bool (b)      #:transparent)  ;; a boolean value, e.g., (bool #t)
 (struct add  (e1 e2)  #:transparent)  ;; add two expressions
@@ -149,7 +149,7 @@
         ; mlet handler
         [(mlet? e)
          (let ([v1 (eval-under-env (mlet-e1 e) env)])
-           
+           (eval-under-env (mlet-e2 e) (cons env (var (mlet-s) v1))))]   
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
