@@ -56,6 +56,7 @@
 (define (eval-under-env e env)
   (cond [(var? e) 
          (envlookup env (var-string e))]
+        
         ; Addition
         [(add? e) 
          (let ([v1 (eval-under-env (add-e1 e) env)]
@@ -143,13 +144,10 @@
              [(munit? v1) (int 1)]
              [true (int 0)]))]
 
-        ; var handler - variables evaluate to themeselves
-        [(var? e) e]
-        
         ; mlet handler
         [(mlet? e)
          (let ([v1 (eval-under-env (mlet-e1 e) env)])
-           (eval-under-env (mlet-e2 e) (cons env (var (mlet-s) v1))))]   
+           (eval-under-env (mlet-e2 e) (cons env (var (mlet-s e) v1))))]   
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
