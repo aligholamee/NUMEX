@@ -114,12 +114,15 @@
         [(fun? e)
          (closure env e)]
         
-        ; Function call with respect to the generated closures
+        ; Function call
         [(call? e)
          (let ([funcName (eval-under-env (call-funexp e) env)])
            (cond
-             [(closure? funcName) (eval-under-env ((closure-fun funcName) env))]
-             [true (error (format "Function closure not found!"))]))]
+             [(closure? funcName) (cond [(eq? (envlookup env funcName) funcName)
+                                         (eval-under-env ((closure-fun funcName)(cons env (closure-env funcName))))]
+                                        [true (error (format "Function declaration not found!"))])
+             [true (error (format "Function closure not found!"))]]))]
+        
 
         ; apair handler
         [(apair? e)
@@ -149,8 +152,9 @@
 
         ; mlet handler
         [(mlet? e)
+         (define sName (mlet-s e))
          (let ([v1 (eval-under-env (mlet-e1 e) env)])
-           (eval-under-env (mlet-e2 e) (cons env (var (mlet-s e) v1))))]   
+           (eval-under-env (mlet-e2 e) (cons env (var (var-string sName) v1))))]   
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
