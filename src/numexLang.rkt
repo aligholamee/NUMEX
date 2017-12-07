@@ -122,7 +122,20 @@
          (let([v1 (eval-under-env (apair-e1 e) env)]
               [v2 (eval-under-env (apair-e2 e) env)])
            (apair v1 v2))]
-         
+
+        ; First and Second handler
+        [(first? e)
+         (let ([v1 (eval-under-env (first-e1 e) env)])
+           (cond
+             [(apair? v1) (apair-e1 v1)]
+             [true (error (format "Dude. Pass a pair within the first."))]))]
+
+        [(second? e)
+         (let ([v1 (eval-under-env (second-e2 e) env)])
+           (cond
+             [(apair? v1) (apair-e2 v1)]
+             [true (error (format "Dude. Pass a pair within the second."))]))]
+        
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
 ;; Interprets the given prgoram(as an expression || a parse tree)
