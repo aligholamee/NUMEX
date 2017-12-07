@@ -46,6 +46,12 @@
         [true (envlookup (cdr env) str)]
 		))
 
+;; Environment creator function
+(define (createNewEnv env actuals)
+  (cond [(null? env) actuals]
+        [true (cons (car env) (createNewEnv (cdr env) actuals))]))
+
+
 ; The helper function of the eval-exp
 (define (eval-under-env e env)
   (cond [(var? e) 
@@ -98,6 +104,8 @@
            (cond
              [(< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env)]
              [true (eval-under-env (ifgthan-e4 e) env)]))]
+
+        ; Function cal
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
