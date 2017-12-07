@@ -105,8 +105,17 @@
              [(< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env)]
              [true (eval-under-env (ifgthan-e4 e) env)]))]
 
-        ; Function cal
-        
+        ; Function declaration
+        [(fun? e)
+         (createNewEnv env (closure env e))]
+
+        ; Function call with respect to the generated closures
+        [(call? e)
+         (let ([funcName (eval-under-env (call-funexp e) env)])
+           (cond
+             [(closure? funcName (lookup env funcName)) (eval-under-env (closure-fun-body funcName) env)]
+             [true (error (format "Function closure not found!"))]))]
+
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
 ;; Interprets the given prgoram(as an expression || a parse tree)
