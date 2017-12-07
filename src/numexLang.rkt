@@ -79,6 +79,7 @@
          (let ([v1 (eval-under-env (neg-e1 e) env)])
            (if (int? v1) (int (- (int-num v1)))
                (error "NUMEX negation applied to non-number")))]
+        
         ; Integer value
         [(int? e) e]
 
@@ -107,15 +108,21 @@
 
         ; Function declaration
         [(fun? e)
-         (eval-under-env e (cons env (closure env e)))]
-
+         (closure env e)]
+        
         ; Function call with respect to the generated closures
         [(call? e)
          (let ([funcName (eval-under-env (call-funexp e) env)])
            (cond
-             [(closure? funcName (envlookup env funcName)) (eval-under-env ((closure-fun funcName) env))]
+             [(closure? funcName) (eval-under-env ((closure-fun funcName) env))]
              [true (error (format "Function closure not found!"))]))]
 
+        ; apair handler
+        [(apair? e)
+         (let([v1 (eval-under-env (apair-e1 e) env)]
+              [v2 (eval-under-env (apair-e2 e) env)])
+           (apair v1 v2))]
+         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
 ;; Interprets the given prgoram(as an expression || a parse tree)
