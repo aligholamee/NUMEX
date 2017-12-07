@@ -25,7 +25,7 @@
 (struct call (funexp actual)       #:transparent) ;; function call
 (struct munit   ()      #:transparent) ;; unit value -- good for ending a list
 (struct ismunit (e)     #:transparent) ;; if e1 is unit then 1 else 0
-(struct mlet (s e1 e2)  #:transparent) ;; a local bunder which thevalue of e1 is bound to s in the expression e2
+(struct mlet (s e1 e2)  #:transparent) ;; a local bounder which the value of e1 is bound to s in the expression e2
 (struct apair (e1 e2)   #:transparent) ;; pair constructor
 (struct first (e1)      #:transparent) ;; the first element of the pair e1
 (struct second (e2)     #:transparent) ;; the second element of the pair e2
@@ -142,6 +142,14 @@
            (cond
              [(munit? v1) (int 1)]
              [true (int 0)]))]
+
+        ; var handler - variables evaluate to themeselves
+        [(var? e) e]
+        
+        ; mlet handler
+        [(mlet? e)
+         (let ([v1 (eval-under-env (mlet-e1 e) env)])
+           
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
