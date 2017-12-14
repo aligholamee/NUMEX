@@ -8,49 +8,57 @@
 ; ========================================
 ;
 
-
 #lang racket
 (provide (all-defined-out)) ;; so we can put tests in a second file
 
 ;; definition of structures for NUMEX programs
-
-;; Add the missing ones
-
+(struct var  (string value) #:transparent)  ;; a variable
 (struct int  (num)    #:transparent)  ;; a constant number, e.g., (int 17)
+(struct bool (b)      #:transparent)  ;; a boolean value, e.g., (bool #t)
 (struct add  (e1 e2)  #:transparent)  ;; add two expressions
-
-
+(struct mult (e1 e2)  #:transparent)  ;; multiply two expressions
+(struct neg  (e1)     #:transparent)  ;; negate the expression
+(struct islthan (e1 e2) #:transparent) ;; is less than
+(struct ifzero (e1 e2 e3) #:transparent) ;; tests e1
+(struct ifgthan (e1 e2 e3 e4) #:transparent) ;; tests if e1 is greater than e2
 (struct fun  (nameopt formal body) #:transparent) ;; a recursive(?) 1-argument function
 (struct call (funexp actual)       #:transparent) ;; function call
-
-
 (struct munit   ()      #:transparent) ;; unit value -- good for ending a list
 (struct ismunit (e)     #:transparent) ;; if e1 is unit then 1 else 0
+(struct mlet (s e1 e2)  #:transparent) ;; a local bounder which the value of e1 is bound to s in the expression e2
+(struct apair (e1 e2)   #:transparent) ;; pair constructor
+(struct first (e1)      #:transparent) ;; the first element of the pair e1
+(struct second (e2)     #:transparent) ;; the second element of the pair e2
+(struct closure (env fun) #:transparent) ;; a closure is not in "source" programs; it is what functions evaluate to
 
-;; a closure is not in "source" programs; it is what functions evaluate to
-(struct closure (env fun) #:transparent) 
+; Converts racket lists to numex lists(type of integer specifically)
+(define (racketlist->numexlist xs) (cond [(null? xs) (munit)]
+                                         [true (apair (int (car xs)) (racketlist->numexlist (cdr xs)))]))
 
-;; Problem 1
+; Converts the numex lists to racket lists(type of integer specifically)
+(define (numexlist->racketlist xs) (cond [(munit? xs) null]
+                                         [true (cons (int-num (apair-e1 xs)) (numexlist->racketlist (apair-e2 xs)))]))
 
-(define (racketlist->numexlist xs) "CHANGE")
-(define (numexlist->racketlist xs) "CHANGE")
+;; Lookup for a variable in an environment
+(define (envlookup env str) ;; env is a racket list apparantly :D
+  (define temp (car env))
+  (cond [(null? temp) (error "unbound variable during evaluation" str)]
+        [(eq? (var-string temp) str) temp]
+        [true (envlookup (cdr env) str)]
+		))
 
-;; Problem 2
+;; Environment creator function
+(define (createNewEnv env actuals)
+  (cond [(null? env) actuals]
+        [true (cons (car env) (createNewEnv (cdr env) actuals))]))
 
-;; lookup a variable in an environment
-;; Complete this function
-(define (envlookup env str)
-  (cond [(null? env) (error "unbound variable during evaluation" str)]
-  		"CHANGE" 
-		)
 
-;; Do NOT change the two cases given to you.  
-;; DO add more cases for other kinds of NUMEX expressions.
-;; We will test eval-under-env by calling it directly even though
-;; "in real life" it would be a helper function of eval-exp.
+; The helper function of the eval-exp
 (define (eval-under-env e env)
   (cond [(var? e) 
          (envlookup env (var-string e))]
+        
+        ; Addition
         [(add? e) 
          (let ([v1 (eval-under-env (add-e1 e) env)]
                [v2 (eval-under-env (add-e2 e) env)])
@@ -59,41 +67,99 @@
                (int (+ (int-num v1) 
                        (int-num v2)))
                (error "NUMEX addition applied to non-number")))]
-        ;; CHANGE add more cases here
+        
+        ; Multiplication
+        [(mult? e)
+         (let ([v1 (eval-under-env (mult-e1 e) env)]
+               [v2 (eval-under-env (mult-e2 e) env)])
+           (if (and (int? v1)
+                    (int? v2))
+               (int (* (int-num v1)
+                       (int-num v2)))
+               (error "NUMEX multiplication applied to non-number")))]
+        
+        ; Negation
+        [(neg? e)
+         (let ([v1 (eval-under-env (neg-e1 e) env)])
+           (if (int? v1) (int (- (int-num v1)))
+               (error "NUMEX negation applied to non-number")))]
+        
+        ; Integer value
+        [(int? e) e]
+
+        ; Is less than comparison
+        [(islthan? e)
+         (let ([v1 (eval-under-env (islthan-e1 e) env)]
+               [v2 (eval-under-env (islthan-e2 e) env)])
+          (cond
+            [(< (int-num v1) (int-num v2)) (int 1)]
+            [true (int 0)]))]
+
+        ; Is zero condition
+        [(ifzero? e)
+         (let ([v1 (eval-under-env (ifzero-e1 e) env)])
+           (cond
+             [(eq? (int-num v1) 0) (eval-under-env (ifzero-e2 e) env)]
+             [true (eval-under-env (ifzero-e3 e) env)]))]
+        
+        ; If greater condition
+        [(ifgthan? e)
+         (let ([v1 (eval-under-env (ifgthan-e1 e) env)]
+               [v2 (eval-under-env (ifgthan-e1 e) env)])
+           (cond
+             [(< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env)]
+             [true (eval-under-env (ifgthan-e4 e) env)]))]
+
+        ; Function declaration
+        [(fun? e)
+         (closure env e)]
+        
+        ; Function call
+        [(call? e)
+         (let ([funcName (eval-under-env (call-funexp e) env)])
+           (cond
+             [(closure? funcName) (cond [(eq? (envlookup env funcName) funcName)
+                                         (eval-under-env ((closure-fun funcName)(cons env (closure-env funcName))))]
+                                        [true (error (format "Function declaration not found!"))])
+             [true (error (format "Function closure not found!"))]]))]
+        
+
+        ; apair handler
+        [(apair? e)
+         (let([v1 (eval-under-env (apair-e1 e) env)]
+              [v2 (eval-under-env (apair-e2 e) env)])
+           (apair v1 v2))]
+
+        ; First and Second handler
+        [(first? e)
+         (let ([v1 (eval-under-env (first-e1 e) env)])
+           (cond
+             [(apair? v1) (apair-e1 v1)]
+             [true (error (format "Dude. Pass a pair within the first."))]))]
+
+        [(second? e)
+         (let ([v1 (eval-under-env (second-e2 e) env)])
+           (cond
+             [(apair? v1) (apair-e2 v1)]
+             [true (error (format "Dude. Pass a pair within the second."))]))]
+
+        ; ismunit handler
+        [(ismunit? e)
+         (let ([v1 (eval-under-env (ismunit-e e) env)])
+           (cond
+             [(munit? v1) (int 1)]
+             [true (int 0)]))]
+
+        ; mlet handler
+        [(mlet? e)
+         (define sName (mlet-s e))
+         (let ([v1 (eval-under-env (mlet-e1 e) env)])
+           (eval-under-env (mlet-e2 e) (cons env (var (var-string sName) v1))))]   
+        
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
-;; Do NOT change
+;; Interprets the given prgoram(as an expression || a parse tree)
 (define (eval-exp e)
   (eval-under-env e null))
+
         
-;; Problem 3
-
-(define (ifmunit e1 e2 e3) "CHANGE")
-
-(define (mlet* bs e2) "CHANGE")
-
-(define (ifeq e1 e2 e3 e4) "CHANGE")
-
-;; Problem 4
-
-(define numex-map "CHANGE")
-
-(define numex-mapAddN
-  (mlet "map" numex-map
-        "CHANGE (notice map is now in NUMEX scope)"))
-
-;; Challenge Problem
-
-(struct fun-challenge (nameopt formal body freevars) #:transparent) ;; a recursive(?) 1-argument function
-
-;; We will test this function directly, so it must do
-;; as described in the assignment
-(define (compute-free-vars e) "CHANGE")
-
-;; Do NOT share code with eval-under-env because that will make grading
-;; more difficult, so copy most of your interpreter here and make minor changes
-(define (eval-under-env-c e env) "CHANGE")
-
-;; Do NOT change this
-(define (eval-exp-c e)
-  (eval-under-env-c (compute-free-vars e) null))

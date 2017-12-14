@@ -162,4 +162,18 @@
 (define (eval-exp e)
   (eval-under-env e null))
 
-        
+
+;; Expanding the NUMXES
+;; Defining Macros
+
+;; Macro #1
+(define (ifmunit e1 e2 e3) (cond [(ismunit? e1) e2] [true e3]))
+
+;; Macro #2
+(define (mlet* racketList) (body) )
+
+
+
+
+
+
