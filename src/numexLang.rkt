@@ -12,7 +12,7 @@
 (provide (all-defined-out)) ;; so we can put tests in a second file
 
 ;; definition of structures for NUMEX programs
-(struct var  (string value) #:transparent)  ;; a variable
+(struct var  (string) #:transparent)  ;; a variable
 (struct int  (num)    #:transparent)  ;; a constant number, e.g., (int 17)
 (struct bool (b)      #:transparent)  ;; a boolean value, e.g., (bool #t)
 (struct add  (e1 e2)  #:transparent)  ;; add two expressions
@@ -169,11 +169,7 @@
 ;; Macro #1
 (define (ifmunit e1 e2 e3) (cond [(ismunit? e1) e2] [true e3]))
 
+(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
-(define (mlet* racketList) (body) )
-
-
-
-
-
+(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
 
