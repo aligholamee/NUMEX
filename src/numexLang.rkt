@@ -113,7 +113,15 @@
         ; Function declaration
         [(fun? e)
          (closure env e)]
-        
+
+
+        ; Function call
+        [(call? e)
+          (let ([funcExp (eval-under-env (call-funexp e) env)])
+            (cond
+              [(closure? funcExp) (eval-under-env (funcExp) (cons env (cons (call-actual e) funcExp)))]
+              [true (error (format "Function did not evaluate to a closure"))]))]        
+
         ; Function call
         [(call? e)
          (let ([funcName (eval-under-env (call-funexp e) env)])
@@ -173,3 +181,6 @@
 ;; Macro #2
 (define (mlet* pairList finalExp) (mlet (car) (cons env)) )
 
+
+
+(define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
