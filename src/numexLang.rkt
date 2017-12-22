@@ -117,11 +117,10 @@
         ; Function call
         [(call? e)
           (let ([funClosure (eval-under-env (call-funexp e) env)])
+            (let ([functionDeclaration (closure-fun funClosure)])
             (cond
-              [(closure? funClosure) (
-                                    (let ([functionDeclaration (closure-fun funcExp)]))
-                                    eval-under-env (fun-body functionDeclaration) (cons env (cons (call-actual e) (cons (fun-nameopt functionDeclaration) (funClosure))))]
-              [true (error (format "Function did not evaluate to a closure"))]))]        
+              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons env (cons (call-actual e) (cons (fun-nameopt functionDeclaration) funClosure))))]
+              [true (error (format "Function did not evaluate to a closure"))])))]        
 
         ; apair handler
         [(apair? e)
@@ -153,7 +152,7 @@
         [(mlet? e)
          (define sName (mlet-s e))
          (let ([v1 (eval-under-env (mlet-e1 e) env)])
-           (eval-under-env (mlet-e2 e) (cons env (var (var-string sName) v1))))]   
+           (eval-under-env (mlet-e2 e) (cons env (var (var-string sName)))))]   
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
@@ -168,10 +167,13 @@
 ;; Macro #1
 (define (ifmunit e1 e2 e3) (cond [(ismunit? e1) e2] [true e3]))
 
-(struct mlet (s e1 e2)  #:transparent)
+;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
-(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
+;(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
 
 
 
 (define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
+(define program2 (mlet "amoo" (int 5) (add (int 1) (var "amoo"))))
+
+
