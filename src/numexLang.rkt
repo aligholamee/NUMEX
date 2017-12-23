@@ -41,9 +41,8 @@
 
 ;; Lookup for a variable in an environment
 (define (envlookup env str) ;; env is a racket list apparantly :D
-  (define temp (car env))
-  (cond [(null? temp) (error "unbound variable during evaluation" str)]
-        [(eq? (var-string temp) str) temp]
+  (cond [(null? (cadr env)) (error "unbound variable during evaluation" str)]
+        [(eq? (var-string (cadr env)) str) (caddr env)]
         [true (envlookup (cdr env) str)]
 		))
 
@@ -152,7 +151,7 @@
         [(mlet? e)
          (define sName (mlet-s e))
          (let ([v1 (eval-under-env (mlet-e1 e) env)])
-           (eval-under-env (mlet-e2 e) (cons env (var (var-string sName)))))]   
+           (eval-under-env (mlet-e2 e) (cons env (cons (var sName) v1))))]  
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
