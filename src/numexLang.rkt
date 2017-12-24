@@ -117,9 +117,12 @@
         [(call? e)
           (let ([funClosure (eval-under-env (call-funexp e) env)])
             (let ([functionDeclaration (closure-fun funClosure)])
+              (let ([evaluatedActual (eval-under-env (call-actual e) env)])
             (cond
-              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons env (cons (call-actual e) (cons (fun-nameopt functionDeclaration) funClosure))))]
-              [true (error (format "Function did not evaluate to a closure"))])))]        
+              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (fun-formal functionDeclaration) evaluatedActual) (cons (cons (fun-nameopt functionDeclaration) funClosure) env)))]
+              ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) env))]
+              ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) funClosure) env))] 
+              [true (error (format "Function did not evaluate to a closure"))]))))]       
 
         ; apair handler
         [(apair? e)

@@ -12,7 +12,7 @@
 (provide (all-defined-out)) ;; so we can put tests in a second file
 
 ;; definition of structures for NUMEX programs
-(struct var  (string value) #:transparent)  ;; a variable
+(struct var  (string) #:transparent)  ;; a variable
 (struct int  (num)    #:transparent)  ;; a constant number, e.g., (int 17)
 (struct bool (b)      #:transparent)  ;; a boolean value, e.g., (bool #t)
 (struct add  (e1 e2)  #:transparent)  ;; add two expressions
@@ -41,9 +41,8 @@
 
 ;; Lookup for a variable in an environment
 (define (envlookup env str) ;; env is a racket list apparantly :D
-  (define temp (car env))
-  (cond [(null? temp) (error "unbound variable during evaluation" str)]
-        [(eq? (var-string temp) str) temp]
+  (cond [(null? env) (error "unbound variable during evaluation" str)]
+        [(eq? (var-string (car (car env))) str) (cdr (car env))]
         [true (envlookup (cdr env) str)]
 		))
 
@@ -113,16 +112,15 @@
         ; Function declaration
         [(fun? e)
          (closure env e)]
-        
+
         ; Function call
         [(call? e)
-         (let ([funcName (eval-under-env (call-funexp e) env)])
-           (cond
-             [(closure? funcName) (cond [(eq? (envlookup env funcName) funcName)
-                                         (eval-under-env ((closure-fun funcName)(cons env (closure-env funcName))))]
-                                        [true (error (format "Function declaration not found!"))])
-             [true (error (format "Function closure not found!"))]]))]
-        
+          (let ([funClosure (eval-under-env (call-funexp e) env)])
+            (let ([functionDeclaration (closure-fun funClosure)])
+              (let ([evaluatedActual (eval-under-env (call-actual e) env)])
+            (cond
+              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) funClosure) env))] 
+              [true (error (format "Function did not evaluate to a closure"))]))))]       
 
         ; apair handler
         [(apair? e)
@@ -154,7 +152,7 @@
         [(mlet? e)
          (define sName (mlet-s e))
          (let ([v1 (eval-under-env (mlet-e1 e) env)])
-           (eval-under-env (mlet-e2 e) (cons env (var (var-string sName) v1))))]   
+           (eval-under-env (mlet-e2 e) (cons (cons (var sName) v1) env)))]  
         
         [#t (error (format "bad NUMEX expression: ~v" e))]))
 
@@ -169,10 +167,13 @@
 ;; Macro #1
 (define (ifmunit e1 e2 e3) (cond [(ismunit? e1) e2] [true e3]))
 
+;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
-(define (mlet* pairList finalExp) (eval-under-env (finalExp) ?) )
+;(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
 
 
 
+(define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
+(define program2 (mlet "amoo" (int 5) (add (int 1) (var "amoo"))))
 
 
