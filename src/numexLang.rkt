@@ -43,6 +43,7 @@
 (define (envlookup env str) ;; env is a racket list apparantly :D
   (cond [(null? env) (error "unbound variable during evaluation" str)]
         [(eq? (var-string (car (car env))) str) (cdr (car env))]
+        
         [true (envlookup (cdr env) str)]
 		))
 
@@ -167,13 +168,13 @@
 ;; Defining Macros
 
 ;; Macro #1
-(define (ifmunit e1 e2 e3) (cond [eq? (ismunit? (int 1)) e2] [true e3]))
+;(define (ifmunit e1 e2 e3) (cond [(eq? (ismunit? e1) (int 1)) e2] [true e3]))
+(define (ifmunit e1 e2 e3) (cond [(eq? (ismunit? e1) #t) e2] [true e3]))
 
 ;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
 ;(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
-
-
+;(define (mlet* pairList finalExp)(call (fun "generateList" "List" (cond [(null? (var "List")) finalExp] [true (mlet (first (car pairList)) (second (car pairList)) (call (var "generateList") (cdr (var "List"))))])) finalExp))
 
 (define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
 (define program2 (mlet "amoo" (int 5) (add (int 1) (var "amoo"))))
