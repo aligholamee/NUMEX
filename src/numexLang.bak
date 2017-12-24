@@ -119,7 +119,7 @@
             (let ([functionDeclaration (closure-fun funClosure)])
               (let ([evaluatedActual (eval-under-env (call-actual e) env)])
             (cond
-              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-formal functionDeclaration)) evaluatedActual) (cons (cons (var (fun-nameopt functionDeclaration)) funClosure) env)))]
+              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (fun-formal functionDeclaration) evaluatedActual) (cons (cons (fun-nameopt functionDeclaration) funClosure) env)))]
               ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) env))]
               ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) funClosure) env))] 
               [true (error (format "Function did not evaluate to a closure"))]))))]       
@@ -167,7 +167,7 @@
 ;; Defining Macros
 
 ;; Macro #1
-(define (ifmunit e1 e2 e3) (cond [eq? (ismunit? (int 1)) e2] [true e3]))
+(define (ifmunit e1 e2 e3) (cond [(ismunit? e1) e2] [true e3]))
 
 ;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
