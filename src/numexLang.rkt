@@ -179,10 +179,8 @@
 ;; Macro #2
 ;(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
 ;(define (mlet* pairList finalExp)(call (fun "generateList" "List" (cond [(null? (var "List")) finalExp] [true (mlet (car (car pairList)) (cdr (car pairList)) (call (var "generateList") (cdr (var "List"))))])) finalExp))
-
 (define (mlet* pairList finalExp)(cond [(null? pairList) (mlet "finalExpResult" (munit) finalExp)] [true (mlet (car (car pairList)) (cdr (car pairList)) (mlet* (cdr pairList) finalExp))]))
-
-                                                                                      
+                                                                                 
 (define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
 (define program2 (mlet "amoo" (int 5) (add (int 1) (var "amoo"))))
 
@@ -191,3 +189,8 @@
    (let ([v1 e1]
          [v2 e2])
   (ifgthan v1 v2 e4 (ifgthan v2 v1 e4 e3))))
+
+
+
+;; New NUMEX functions | Internal functions
+(call (fun "numex-map" "numexFunction" (fun "applied-numex-map" "numexList" () 
