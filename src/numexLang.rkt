@@ -129,7 +129,7 @@
         [(apair? e)
          (let([v1 (eval-under-env (apair-e1 e) env)]
               [v2 (eval-under-env (apair-e2 e) env)])
-           (apair v1 v2))]
+           (cons v1 v2))]
 
         ; First and Second handler
         [(first? e)
@@ -174,9 +174,13 @@
 ;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
 ;(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
-;(define (mlet* pairList finalExp)(call (fun "generateList" "List" (cond [(null? (var "List")) finalExp] [true (mlet (first (car pairList)) (second (car pairList)) (call (var "generateList") (cdr (var "List"))))])) finalExp))
+(define (mlet* pairList finalExp)(call (fun "generateList" "List" (cond [(null? (var "List")) finalExp] [true (mlet (first (car pairList)) (second (car pairList)) (call (var "generateList") (cdr (var "List"))))])) finalExp))
 
 (define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
 (define program2 (mlet "amoo" (int 5) (add (int 1) (var "amoo"))))
 
-
+; Macro #3
+(define (ifeq e1 e2 e3 e4)
+   (let ([v1 e1]
+         [v2 e2])
+  (ifgthan v1 v2 e4 (ifgthan v2 v1 e4 e3))))
