@@ -151,6 +151,10 @@
              [(munit? v1) (int 1)]
              [true (int 0)]))]
 
+        ; munit
+        [(munit? e)
+           '()]
+
         ; mlet handler
         [(mlet? e)
          (define sName (mlet-s e))
@@ -174,8 +178,11 @@
 ;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
 ;(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
-(define (mlet* pairList finalExp)(call (fun "generateList" "List" (cond [(null? (var "List")) finalExp] [true (mlet (first (car pairList)) (second (car pairList)) (call (var "generateList") (cdr (var "List"))))])) finalExp))
+;(define (mlet* pairList finalExp)(call (fun "generateList" "List" (cond [(null? (var "List")) finalExp] [true (mlet (car (car pairList)) (cdr (car pairList)) (call (var "generateList") (cdr (var "List"))))])) finalExp))
 
+(define (mlet* pairList finalExp)(cond [(null? pairList) (mlet "finalExpResult" (munit) finalExp)] [true (mlet (car (car pairList)) (cdr (car pairList)) (mlet* (cdr pairList) finalExp))]))
+
+                                                                                      
 (define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
 (define program2 (mlet "amoo" (int 5) (add (int 1) (var "amoo"))))
 
