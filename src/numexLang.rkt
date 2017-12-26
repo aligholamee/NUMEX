@@ -200,7 +200,7 @@
 
 
 ;(define numex-map (fun "final" "func" (fun "map" "list" (cond [(eq? (ismunit (var "list")) (int 1))]
-                                                           [#t (apair (call (var "func") (first (var "list"))) (call (var "map") (second(var "list"))))]))))
+                                                           ;[#t (apair (call (var "func") (first (var "list"))) (call (var "map") (second(var "list"))))]))))
 
 ; numex-map final version
 (define numex-map (fun "final" "func" (fun "map" "list" (ifeq (ismunit (var "list")) (int 1) (munit)
