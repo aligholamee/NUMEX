@@ -153,7 +153,7 @@
 
         ; munit
         [(munit? e)
-           '()]
+           (munit)]
 
         ; mlet handler
         [(mlet? e)
@@ -194,12 +194,13 @@
 
 ;; New NUMEX functions | Internal functions
 
-(define (numex-map e) (fun "map" "list" (apair (call e (car (var "list"))) (call (var "map") (cdr (var "list"))))))
+;(define (numex-map e) (fun "map" "list" (apair (call e (car (var "list"))) (call (var "map") (cdr (var "list"))))))
   ;;(call (fun "numex-map" "numexFunction"
           ;; (fun "applied-numex-map" "numexList" (call (fun "numexFunction" null )
 
 
-
+(define numex-map (fun "final" "func" (fun "map" "list" (cond [(munit? (var "list") )(munit)]
+                                                           [#t (apair (call (var "func") (first (var "list"))) (call (var "map") (second(var "list"))))]))))
 
 
 
