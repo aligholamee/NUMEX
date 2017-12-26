@@ -129,7 +129,7 @@
         [(apair? e)
          (let([v1 (eval-under-env (apair-e1 e) env)]
               [v2 (eval-under-env (apair-e2 e) env)])
-           (cons v1 v2))]
+           (apair v1 v2))]
 
         ; First and Second handler
         [(first? e)
@@ -193,4 +193,29 @@
 
 
 ;; New NUMEX functions | Internal functions
-(call (fun "numex-map" "numexFunction" (fun "applied-numex-map" "numexList" () 
+
+(define (numex-map e) (fun "map" "list" (apair (call e (car (var "list"))) (call (var "map") (cdr (var "list"))))))
+  ;;(call (fun "numex-map" "numexFunction"
+          ;; (fun "applied-numex-map" "numexList" (call (fun "numexFunction" null )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                                  
+
+                                               
