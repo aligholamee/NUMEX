@@ -106,9 +106,8 @@
         [(ifgthan? e)
          (let ([v1 (eval-under-env (ifgthan-e1 e) env)]
                [v2 (eval-under-env (ifgthan-e1 e) env)])
-           (cond
-             [(< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env)]
-             [true (eval-under-env (ifgthan-e4 e) env)]))]
+             (< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env) (eval-under-env (ifgthan-e4 e) env))]
+ 
 
         ; Function declaration
         [(fun? e)
@@ -120,7 +119,8 @@
             (let ([functionDeclaration (closure-fun funClosure)])
               (let ([evaluatedActual (eval-under-env (call-actual e) env)])
             (cond
-              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-formal functionDeclaration)) evaluatedActual) (cons (cons (var (fun-nameopt functionDeclaration)) funClosure) env)))]
+              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-formal functionDeclaration)) evaluatedActual)
+                                                                                          (cons (cons (var (fun-nameopt functionDeclaration)) funClosure) (closure-env funClosure))))]
               ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) env))]
               ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) funClosure) env))] 
               [true (error (format "Function did not evaluate to a closure"))]))))]       
@@ -200,19 +200,13 @@
 
 
 ;(define numex-map (fun "final" "func" (fun "map" "list" (cond [(eq? (ismunit (var "list")) (int 1))]
-                                                           ;[#t (apair (call (var "func") (first (var "list"))) (call (var "map") (second(var "list"))))]))))
+                                                          ; [#t (apair (call (var "func") (first (var "list"))) (call (var "map") (second(var "list"))))]))))
 
 ; numex-map final version
 (define numex-map (fun "final" "func" (fun "map" "list" (ifeq (ismunit (var "list")) (int 1) (munit)
                                                            (apair (call (var "func") (first (var "list"))) (call (var "map") (second(var "list"))))))))
-
-
-
-
-
-
-
-
+; numex-mapAddn
+;(define numex-mapAddn (mlet "i" ? (numex-map (add (var "i") (
 
 
 
