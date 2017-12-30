@@ -36,7 +36,7 @@
                                          [true (apair (car xs) (racketlist->numexlist (cdr xs)))]))
 
 ; Converts the numex lists to racket lists
-(define (numexlist->racketlist xs) (cond [(ismunit? xs) '()]
+(define (numexlist->racketlist xs) (cond [(eq? (ismunit xs) (int 1)) '()]
                                          [true (cons (first xs) (numexlist->racketlist (second xs)))]))
 
 ;; Lookup for a variable in an environment
@@ -50,7 +50,6 @@
 (define (createNewEnv env actuals)
   (cond [(null? env) actuals]
         [true (cons (car env) (createNewEnv (cdr env) actuals))]))
-
 
 ; The helper function of the eval-exp
 (define (eval-under-env e env)

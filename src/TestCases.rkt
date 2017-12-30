@@ -204,9 +204,12 @@
    (check-equal? (eval-exp (call (call numex-mapAddN (int 7))
                                   (racketlist->numexlist (list (int 3)))))
                  (racketlist->numexlist (list (int 10))) "mapAddN single item list")
-; add
+   ; add
+   ; STATUS: PASSED
    (check-equal? (eval-exp (add (int 3) (int 4))) (int 7) "simple add")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (add (add (int 1) (int 2)) (add (int 3) (int 4)))) (int 10) "complex add")
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (add (int 3) (munit)))) "add exception")
 
 ; mult
