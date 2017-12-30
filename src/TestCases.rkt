@@ -283,7 +283,9 @@
    (check-exn #rx"numex" (lambda () (eval-exp (ifzero "1" (int 2) (int 3) ))) "ifzero exception")
    
    ; apair
+   ; STATUS: PASSED
    (check-equal? (eval-exp (apair (int 1) (int 1))) (apair (int 1) (int 1)) "int apair")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (int 1) (apair (var "x") (var "x"))))
                  (apair (int 1) (int 1)) "var apair")
    
