@@ -42,8 +42,7 @@
 ;; Lookup for a variable in an environment
 (define (envlookup env str) ;; env is a racket list apparantly :D
   (cond [(null? env) (error "unbound variable during evaluation" str)]
-        [(eq? (var-string (car (car env))) str) (cdr (car env))]
-        
+        [(eq? (car (car env)) str) (cdr (car env))]
         [true (envlookup (cdr env) str)]
 		))
 
