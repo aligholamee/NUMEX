@@ -157,7 +157,7 @@
         [(mlet? e)
          (define sName (mlet-s e))
          (let ([v1 (eval-under-env (mlet-e1 e) env)])
-           (eval-under-env (mlet-e2 e) (cons (cons (var sName) v1) env)))]
+           (eval-under-env (mlet-e2 e) (cons (cons sName v1) env)))]
 
         ; Closure handler
         [(closure? e) e]

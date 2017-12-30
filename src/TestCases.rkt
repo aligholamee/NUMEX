@@ -235,8 +235,11 @@
                  (closure '() (fun null "x" (var "x"))) "closure evaluation")
    
    ; mlet and var
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (add (int 1) (int 1)) (var "x"))) (int 2) "mlet and var 1")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (int 1) (var "x"))) (int 1) "mlet and var 2")
+   ; STATUS: PASSED
    (check-exn #rx"unbound" (lambda () (eval-exp (var "x"))) "var exception")
    
    ; fun
