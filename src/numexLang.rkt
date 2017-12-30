@@ -31,9 +31,9 @@
 (struct second (e2)     #:transparent) ;; the second element of the pair e2
 (struct closure (env fun) #:transparent) ;; a closure is not in "source" programs; it is what functions evaluate to
 
-; Converts racket lists to numex lists(type of integer specifically)
+; Converts racket lists to numex lists
 (define (racketlist->numexlist xs) (cond [(null? xs) (munit)]
-                                         [true (apair (int (car xs)) (racketlist->numexlist (cdr xs)))]))
+                                         [true (apair (car xs) (racketlist->numexlist (cdr xs)))]))
 
 ; Converts the numex lists to racket lists(type of integer specifically)
 (define (numexlist->racketlist xs) (cond [(munit? xs) null]
