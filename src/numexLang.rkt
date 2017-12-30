@@ -36,7 +36,7 @@
                                          [true (apair (car xs) (racketlist->numexlist (cdr xs)))]))
 
 ; Converts the numex lists to racket lists
-(define (numexlist->racketlist xs) (cond [(ismunit xs) ('())]
+(define (numexlist->racketlist xs) (cond [(ismunit? xs) '()]
                                          [true (cons (first xs) (numexlist->racketlist (second xs)))]))
 
 ;; Lookup for a variable in an environment
