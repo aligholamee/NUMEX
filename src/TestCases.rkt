@@ -4,11 +4,7 @@
 ;
 ; [] Creation Date : December 2017
 ;
-; [] Created By :
-;
-;  Mehdi Ahmadpanah (smahmadpanah@gmail.com)
-;                 &&
-;  Ali Gholami (aligholami7596@gmail.com) 
+; [] Created By : Ali Gholami (aligholami7596@gmail.com) 
 ; ========================================
 ;
 #lang racket
@@ -53,7 +49,7 @@
               (lambda () (eval-exp (islthan (int 2) (int "a"))))
               "islthan bad argument")
 
-   
+   ; STATUS: PASSED
    (check-exn exn:fail?
               (lambda () (eval-exp (ifzero (munit) (int 2) (int 3))))
               "ifzero bad argument")

@@ -91,9 +91,13 @@
          (let ([v1 (eval-under-env (islthan-e1 e) env)]
                [v2 (eval-under-env (islthan-e2 e) env)])
           (cond
-            [(< (int-num v1) (int-num v2)) (int 1)]
-            [true (int 0)]))]
-
+            [(integer? (int-num v1)) (cond
+                                   [(integer? (int-num v2)) (cond
+                                                          [(< (int-num v1) (int-num v2)) (int 1)]
+                                                          [true (int 0)])
+                                   [true (error (format "Dude! islthan bad second argument"))]])
+            [true (error (format "Dude! islthan bad first argument"))]]))]
+        
         ; Is zero condition
         [(ifzero? e)
          (cond
