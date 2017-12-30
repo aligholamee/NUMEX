@@ -35,9 +35,9 @@
 (define (racketlist->numexlist xs) (cond [(null? xs) (munit)]
                                          [true (apair (car xs) (racketlist->numexlist (cdr xs)))]))
 
-; Converts the numex lists to racket lists(type of integer specifically)
-(define (numexlist->racketlist xs) (cond [(munit? xs) null]
-                                         [true (cons (int-num (apair-e1 xs)) (numexlist->racketlist (apair-e2 xs)))]))
+; Converts the numex lists to racket lists
+(define (numexlist->racketlist xs) (cond [(ismunit xs) ('())]
+                                         [true (cons (first xs) (numexlist->racketlist (second xs)))]))
 
 ;; Lookup for a variable in an environment
 (define (envlookup env str) ;; env is a racket list apparantly :D
