@@ -267,12 +267,19 @@
    (check-exn #rx"numex" (lambda () (eval-exp (ifgthan "1" (int 2) (int 3) (int 4)))) "ifgthan exception")
 
    ; ifzero
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifzero (int 1) (int 2) (int 3))) (int 3) "simple ifzero, false")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifzero (add (int 0)(int 0)) (neg (int 2)) (int 3) )) (int -2) "complex ifzero, false")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifzero (int 1) (int 2) (islthan (int 0) (int -1)) )) (int 0) "complex ifzero, false 2")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifzero (int 0) (int 4) (int 3) )) (int 4) "simple ifzero, true")
+   ; STATUS: PASSED 
    (check-equal? (eval-exp (ifzero (mult (int 0)(int 2)) (add (int 1) (int 0)) (int 3))) (int 1) "complex ifzero, true")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifzero (int 0) (add (int 1)(int 2)) (int 4))) (int 3) "complex ifzero, true 2")
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (ifzero "1" (int 2) (int 3) ))) "ifzero exception")
    
    ; apair

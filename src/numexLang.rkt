@@ -95,10 +95,12 @@
 
         ; Is zero condition
         [(ifzero? e)
-         (let ([v1 (eval-under-env (ifzero-e1 e) env)])
-           (cond
-             [(eq? (int-num v1) 0) (eval-under-env (ifzero-e2 e) env)]
-             [true (eval-under-env (ifzero-e3 e) env)]))]
+         (cond
+           [(string? (ifzero-e1 e)) (error (format "ifzero bad argument"))]
+           [true (let ([v1 (eval-under-env (ifzero-e1 e) env)])
+                   (cond
+                     [(eq? (int-num v1) 0) (eval-under-env (ifzero-e2 e) env)]
+                     [true (eval-under-env (ifzero-e3 e) env)]))])]
         
         ; If greater condition
         [(ifgthan? e)
