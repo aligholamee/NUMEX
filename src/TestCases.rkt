@@ -44,7 +44,7 @@
    ; STATUS: PASSED
    (check-equal? (eval-exp (neg (neg (int -9)) )) (int -9) "neg simple test double")
 
-   ; STATUS: 
+   ; STATUS: PASSED
    (check-exn exn:fail?
               (lambda () (eval-exp (islthan (int 2) (int "a"))))
               "islthan bad argument")
@@ -211,29 +211,33 @@
     (int 2)
     (eval-exp (ifeq (int 2) (add (int 1) (int 2)) (int 1) (int 2))))
 
-  (test-case "numex-map"
-    (define addtwo (fun "addone" "x" (add (var "x") (int 2))))
-    (define numex-map-addtwo (call numex-map addtwo))
-    (check-equal? (eval-exp (call numex-map-addtwo (munit))) (munit))
-
+    ; STATUS: PASSED
+    (test-case "numex-map"
+               (define addtwo (fun "addone" "x" (add (var "x") (int 2))))
+               (define numex-map-addtwo (call numex-map addtwo))
+               (check-equal? (eval-exp (call numex-map-addtwo (munit))) (munit))
+    ; STATUS: PASSED
     (define my-numex-list (apair (int 23) (apair (int 42) (munit))))
     (define my-answers (apair (int 25) (apair (int 44) (munit))))
     (check-equal? (eval-exp (call numex-map-addtwo my-numex-list)) my-answers))
 
-  (test-case "numex-mapAddN"
-    (define input (apair (int 25) (apair (int 44) (munit))))
-    (define output (apair (int 26) (apair (int 45) (munit))))
-    (check-equal? (eval-exp (call (call numex-mapAddN (int 1)) input)) output))
-
+    ; STATUS: 
+    (test-case "numex-mapAddN"
+               (define input (apair (int 25) (apair (int 44) (munit))))
+               (define output (apair (int 26) (apair (int 45) (munit))))
+               (check-equal? (eval-exp (call (call numex-mapAddN (int 1)) input)) output))
+    ; STATUS: 
     (check-equal? (eval-exp (call (call numex-mapAddN (int 7))
                                   (racketlist->numexlist '())))
-                 (munit) "mapAddN empty list")
+                  (munit) "mapAddN empty list")
+    ; STATUS:
     (check-equal? (eval-exp (call (call numex-mapAddN (int 7))
                                   (racketlist->numexlist (list (int 3) (int 4) (int 9)))))
-                 (racketlist->numexlist (list (int 10) (int 11) (int 16))) "mapAddN +7")
-   (check-equal? (eval-exp (call (call numex-mapAddN (int 7))
+                  (racketlist->numexlist (list (int 10) (int 11) (int 16))) "mapAddN +7")
+    ; STATUS: 
+    (check-equal? (eval-exp (call (call numex-mapAddN (int 7))
                                   (racketlist->numexlist (list (int 3)))))
-                 (racketlist->numexlist (list (int 10))) "mapAddN single item list")
+                  (racketlist->numexlist (list (int 10))) "mapAddN single item list")
    ; add
    ; STATUS: PASSED
    (check-equal? (eval-exp (add (int 3) (int 4))) (int 7) "simple add")
