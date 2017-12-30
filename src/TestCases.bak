@@ -89,8 +89,7 @@
    (racketlist->numexlist (list (var "foo") (int 17))))
 
 
-    ; racketlist->numexlist
-    ; STATUS: PASSED
+         ; racketlist->numexlist
    (check-equal? (racketlist->numexlist '(1 2 3 4))
                   (apair 1 (apair 2 (apair 3 (apair 4 (munit))))) "simple racketlist")
    (check-equal? (racketlist->numexlist '()) (munit) "empty racketlist")
