@@ -306,9 +306,13 @@
    (check-exn #rx"numex" (lambda () (eval-exp (second (add (int 1) (int 2))))) "second exception")
    
    ; ismunit
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ismunit (munit))) (int 1) "simple ismunit true")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (munit) (ismunit (var "x")))) (int 1) "mlet ismunit true")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ismunit (int 0))) (int 0) "simple ismunit false")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (int 0) (ismunit (var "x")))) (int 0) "mlet ismunit false")
    
    ; call
