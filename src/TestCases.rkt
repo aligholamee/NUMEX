@@ -243,18 +243,27 @@
    (check-exn #rx"unbound" (lambda () (eval-exp (var "x"))) "var exception")
    
    ; fun
+   ; STATUS: PASSED
    (check-equal? (eval-exp (fun null "x" (var "x")))
                  (closure '() (fun null "x" (var "x"))) "fun evaluation")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (int 1) (fun null "a" (var "x"))))
                  (closure (list (cons "x" (int 1))) (fun null "a" (var "x"))) "mlet and fun evaluation")
    
    ; ifgthan
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifgthan (int 1) (int 2) (int 3) (int 4))) (int 4) "simple ifgthan, false")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifgthan (add (int 0)(int 1)) (add (int 0)(int 2)) (int 3) (int 4))) (int 4) "complex ifgthan, false")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifgthan (int 1) (int 2) (int 3) (add (int 2)(int 2)))) (int 4) "complex ifgthan, false 2")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifgthan (int 2) (int 1) (int 3) (int 4))) (int 3) "simple ifgthan, true")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifgthan (add (int 0)(int 2)) (add (int 1) (int 0)) (int 3) (int 4))) (int 3) "complex ifgthan, true")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifgthan (int 2) (int 1) (add (int 1)(int 2)) (int 4))) (int 3) "complex ifgthan, true 2")
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (ifgthan "1" (int 2) (int 3) (int 4)))) "ifgthan exception")
 
    ; ifzero

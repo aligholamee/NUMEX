@@ -102,10 +102,14 @@
         
         ; If greater condition
         [(ifgthan? e)
-         (let ([v1 (eval-under-env (ifgthan-e1 e) env)]
-               [v2 (eval-under-env (ifgthan-e1 e) env)])
-             (< (int-num v2) (int-num v1)) (eval-under-env (ifgthan-e3 e) env) (eval-under-env (ifgthan-e4 e) env))]
- 
+         (cond
+           [(string? (ifgthan-e1 e)) (error (format "ifgthan bad argument"))]
+           [(string? (ifgthan-e2 e)) (error (format "ifgthan bad argument"))]
+           [true (let ([v1 (eval-under-env (ifgthan-e1 e) env)]
+                       [v2 (eval-under-env (ifgthan-e2 e) env)])
+                   (cond
+                     [(> (int-num v1) (int-num v2)) (eval-under-env (ifgthan-e3 e) env)]
+                     [true (eval-under-env (ifgthan-e4 e) env)]))])]
 
         ; Function declaration
         [(fun? e)
@@ -117,8 +121,8 @@
             (let ([functionDeclaration (closure-fun funClosure)])
               (let ([evaluatedActual (eval-under-env (call-actual e) env)])
             (cond
-              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-formal functionDeclaration)) evaluatedActual)
-                                                                                          (cons (cons (var (fun-nameopt functionDeclaration)) funClosure) (closure-env funClosure))))]
+              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (fun-formal functionDeclaration) evaluatedActual)
+                                                                                          (cons (cons (fun-nameopt functionDeclaration) funClosure) (closure-env funClosure))))]
               ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) env))]
               ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) funClosure) env))] 
               [true (error (format "Function did not evaluate to a closure"))]))))]       
