@@ -290,13 +290,19 @@
                  (apair (int 1) (int 1)) "var apair")
    
    ; first
+   ; STATUS: PASSED
    (check-equal? (eval-exp (first (apair (int 1) (int 2)))) (int 1) "simple first")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (apair (int 1) (int 2)) (first (var "x")))) (int 1) "mlet and first")
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (first (add (int 1) (int 2))))) "first exception")
    
    ; second
+   ; STATUS: PASSED
    (check-equal? (eval-exp (second (apair (int 1) (int 2)))) (int 2) "second evaluation")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "x" (apair (int 1) (int 2)) (second (var "x")))) (int 2) "mlet and second")
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (second (add (int 1) (int 2))))) "second exception")
    
    ; ismunit
