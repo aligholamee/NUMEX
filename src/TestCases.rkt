@@ -12,25 +12,30 @@
   (test-suite
    "Project Tests"
 
-   ;1
-   ;(check-equal? (eval-exp (add (int 2) (int 2))) (int 4) "add simple test")
+   ; STATUS: PASSED
+   (check-equal? (eval-exp (add (int 2) (int 2))) (int 4) "add simple test")
 
-   ;2
+   ; STATUS: PASSED
    (check-equal? (eval-exp (islthan (int 2) (int 2))) (int 0) "islthan simple test")
    
-   ;3
- ;  (check-exn (lambda (x) (string=? (exn-message x) "numex addition applied to non-number"))
-  ;            (lambda () (eval-exp (add (int 2) (munit))))
-   ;           "add bad argument")
+   ; STATUS: PASSED
+   (check-exn (lambda (x) (string=? (exn-message x) "numex addition applied to non-number"))
+              (lambda () (eval-exp (add (int 2) (munit))))
+              "add bad argument")
 
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifzero (int 2) (int 2) (int 3))) (int 3) "ifzero simple test")
 
-(check-equal? (eval-exp (neg (int 5) )) (int -5) "neg simple test")
+   ; STATUS: PASSED
+   (check-equal? (eval-exp (neg (int 5) )) (int -5) "neg simple test")
 
-(check-equal? (eval-exp (neg (int 0) )) (int 0) "neg simple test zero")
+   ; STATUS: PASSED
+   (check-equal? (eval-exp (neg (int 0) )) (int 0) "neg simple test zero")
 
-(check-equal? (eval-exp (neg (neg (int -9)) )) (int -9) "neg simple test double")
+   ; STATUS: PASSED
+   (check-equal? (eval-exp (neg (neg (int -9)) )) (int -9) "neg simple test double")
 
+   ; STATUS: 
    (check-exn exn:fail?
               (lambda () (eval-exp (islthan (int 2) (int "a"))))
               "islthan bad argument")
@@ -62,11 +67,13 @@
               (lambda () (eval-exp (neg (munit))))
               "neg bad argument")
 
+   ; STATUS: PASSED
    ;when it should run without raising any error
-  ; (check-not-exn
-    ;          (lambda () (eval-exp (add (int 2) (int 3))))
-   ;           "add suitable arguments")
+   (check-not-exn
+             (lambda () (eval-exp (add (int 2) (int 3))))
+              "add suitable arguments")
    
+   ; STATUS: FAILED
    (check-equal? (numexlist->racketlist
                   (eval-exp (call (call numex-mapAddN (int 9))
                                   (racketlist->numexlist 
@@ -74,20 +81,21 @@
                  (list (int 19) (int 18) (int 24))
                  "provided combined test using problems 1, 2, and 4")
 
+   ; STATUS: FAILED
    (test-equal? "Numex list -> Racket list #1"
     (list (int 3) (int 4) (int 9))
     (numexlist->racketlist (apair (int 3) (apair (int 4) (apair (int 9) (munit))))))
 
+   ; STATUS: PASSED
+   (test-equal? "numex list -> Racket list #2"
+                (apair (list (int 42) (var "x")) (apair (list (int 43) (var "y")) (munit)))
+                (racketlist->numexlist (list (list (int 42) (var "x")) (list (int 43) (var "y"))))
+                )
 
-(test-equal? "numex list -> Racket list #2"
-    (apair (list (int 42) (var "x")) (apair (list (int 43) (var "y")) (munit)))
-    (racketlist->numexlist (list (list (int 42) (var "x")) (list (int 43) (var "y"))))
-  )
-
-  (test-equal? "R list -> M list #3"
-   (apair (var "foo") (apair (int 17) (munit)))
-   (racketlist->numexlist (list (var "foo") (int 17))))
-
+    ; STATUS: PASSED
+   (test-equal? "R list -> M list #3"
+             (apair (var "foo") (apair (int 17) (munit)))
+             (racketlist->numexlist (list (var "foo") (int 17))))
 
     ; racketlist->numexlist
     ; STATUS: PASSED
@@ -99,10 +107,12 @@
    ; STATUS: FAILED
    (check-equal? (numexlist->racketlist (apair 1 (apair 2 (apair 3 (apair 4 (munit))))))
                   '(1 2 3 4) "simple numexlist")
+   ; STATUS: FAILED
    (check-equal? (numexlist->racketlist (munit)) '() "empty numexlist")
    
 
-   
+
+   ; STATUS: PASSED
   (test-equal? "Local scoping"
                (int 2)
                (eval-exp (mlet "f1"
@@ -110,29 +120,33 @@
                                (mlet "f3" (fun "f3" "f" (mlet "x" (int 1729) (call (var "f") (munit)))) 
                                      (call (var "f3") (call (var "f1") (int 1)))))))
 
+  ; STATUS: PASSED
   (test-equal? "basic-call"
                (int 43)
                (eval-exp (call (fun "incr" "x" (add (var "x") (int 1))) (int 42))))
 
+  ; STATUS: PASSED
  (test-equal? "basic-call mult neg"
                (int 10)
                (eval-exp (call (fun "incr" "x" (neg (mult (var "x") (int 2)))) (int -5))))
 
-  
+  ; STATUS: PASSED
   (test-equal? "ifgthan with invalid e4"
                (int 0)
                (eval-exp (ifgthan (add (int 2) (int 2)) (mult (int 2) (int 1)) (add (int 3) (int -3)) (neg (add "wrong" "bad")))))
 
-(test-equal? "ifzero with invalid e4"
+  ; STATUS: PASSED
+  (test-equal? "ifzero with invalid e4"
                (int 2)
                (eval-exp (ifzero (add (int 2) (int -2)) (mult (int 2) (int 1)) (neg (add "wrong" "bad")))))
 
-
+  ; STATUS: PASSED
   (test-equal? "first/second test"
      (apair (int 21) (int 4))
      (eval-exp (apair (first (apair (mult (int 7) (int 3)) (int 2)))
                  (second (apair (int 3) (int 4))) )))
 
+  ; STATUS: PASSED
   (test-equal? "Sum over list"
      (int 6)
      (eval-exp (mlet "fnc"
@@ -142,41 +156,45 @@
                        (add (first (var "x")) (call (var "f1") (second (var "x"))))))
        (call (var "fnc") (apair (int 1) (apair (int 2) (apair (int 3) (munit))))))))
 
+  ; STATUS: PASSED
   (test-equal? "ifmunit test #1"
    (int 2)
    (eval-exp (ifmunit (munit) (int 2) (int 3))))
 
+  ; STATUS: PASSED
   (test-equal? "ifmunit test #2"
    (int 3)
    (eval-exp (ifmunit (int 3) (int 2) (int 3))))
-  
-   
+
+
+    ; STATUS: PASSED
     (check-equal? (int 1)
      (eval-exp (mlet* (cons (cons "x" (int 1)) null) (var "x")))
      )
 
+    ; STATUS: PASSED
     (check-equal? 
     (int 20)
      (eval-exp (mlet* (list (cons "f" (int 2)) (cons "y" (int 15))) (add (var "f") (add (var "y") (int 3)))))
      )
 
- 
+    ; STATUS: PASSED
     (check-equal? (int 1)
     (eval-exp (ifeq (int 2) (add (int 1) (int 1)) (int 1) (int 2)))
     )
 
-
+    ; STATUS: PASSED
     (check-equal? (int 1)
     (eval-exp (ifeq (int 2) (add (int 1) (int 1)) (islthan (int 1) (int 2)) (int 2)))
     )
 
 
-
+    ; STATUS: PASSED
     (check-equal? (int 0)
     (eval-exp (ifeq (int 2) (add (int 1) (int 1)) (mult (islthan (int 1) (int 2)) (int 0)) (int 2)))
     )
 
-    
+    ; STATUS: PASSED
     (check-equal? 
     (int 2)
     (eval-exp (ifeq (int 2) (add (int 1) (int 2)) (int 1) (int 2))))
