@@ -120,14 +120,12 @@
         ; Function call
         [(call? e)
           (let ([funClosure (eval-under-env (call-funexp e) env)])
-            (let ([functionDeclaration (closure-fun funClosure)])
-              (let ([evaluatedActual (eval-under-env (call-actual e) env)])
             (cond
-              [(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (fun-formal functionDeclaration) evaluatedActual)
-                                                                                          (cons (cons (fun-nameopt functionDeclaration) funClosure) (closure-env funClosure))))]
-              ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) env))]
-              ;[(closure? funClosure) (eval-under-env (fun-body functionDeclaration) (cons (cons (cons (var (fun-nameopt functionDeclaration)) evaluatedActual) funClosure) env))] 
-              [true (error (format "Function did not evaluate to a closure"))]))))]       
+              [(closure? funClosure) (let ([functionDeclaration (closure-fun funClosure)])
+                                       (let ([evaluatedActual (eval-under-env (call-actual e) env)])
+                                         (eval-under-env (fun-body functionDeclaration) (cons (cons (fun-formal functionDeclaration) evaluatedActual)
+                                                                                          (cons (cons (fun-nameopt functionDeclaration) funClosure) (closure-env funClosure))))))]
+              [true (error (format "Dude! Pass a closure in call!"))]))]   
 
         ; apair handler
         [(apair? e)
@@ -180,8 +178,8 @@
 ;; Defining Macros
 
 ;; Macro #1
-;(define (ifmunit e1 e2 e3) (cond [(eq? (ismunit? e1) (int 1)) e2] [true e3]))
-(define (ifmunit e1 e2 e3) (cond [(eq? (ismunit? e1) #t) e2] [true e3]))
+;(define (ifmunit e1 e2 e3) (cond [(equal? (ismunit e1) (int 1)) e2] [true e3]))
+(define (ifmunit e1 e2 e3) (cond [(eq? (munit? e1) #t) e2] [true e3]))
 
 ;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2

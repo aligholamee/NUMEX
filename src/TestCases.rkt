@@ -316,9 +316,11 @@
    (check-equal? (eval-exp (mlet "x" (int 0) (ismunit (var "x")))) (int 0) "mlet ismunit false")
    
    ; call
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet "double" (fun "double" "x" (add (var "x") (var "x")))
                                   (call (var "double") (int 10))))
                  (int 20) "double function, non-recursive")
+   ; STATUS: PASSED
    (check-equal?
     (eval-exp
      (mlet "range"
@@ -329,71 +331,84 @@
            (call (call (var "range") (int 5)) (int 8))))
     (apair (int 5) (apair (int 6) (apair (int 7) (apair (int 8) (munit))))) "range function, recursive")
 
-(check-equal?
- (eval-exp (call (fun "a" "b" (ifgthan (var "b") (int 5) (add (var "b") (int 3))
-                         (call (var "a") (mult (int 2) (int 3))  ))) (int 2))
-             )(int 9) "simple recursive call 2")
+   ; STATUS: PASSED
+   (check-equal?
+    (eval-exp (call (fun "a" "b" (ifgthan (var "b") (int 5) (add (var "b") (int 3))
+                                          (call (var "a") (mult (int 2) (int 3))  ))) (int 2))
+              )(int 9) "simple recursive call 2")
 
 
 
 
+   ; STATUS: PASSED
+   (check-equal?
+    (eval-exp (call (fun "a" "b" (ifeq (var "b") (int 1) (int 3)
+                                       (mlet "b" (add (var "b") (int -1)) (call (var "a") (var "b")  )))) (int 2))
+              ) (int 3) "simple recursive call")
 
-(check-equal?
- (eval-exp (call (fun "a" "b" (ifeq (var "b") (int 1) (int 3)
-                         (mlet "b" (add (var "b") (int -1)) (call (var "a") (var "b")  )))) (int 2))
-            ) (int 3) "simple recursive call")
+   ; STATUS: PASSED
+   (check-equal?
+    (eval-exp (call (call (call (fun "a" "b" (fun "x" "y" (fun "w" "r" (neg (mult (add (var "b") (var "y")) (var "r"))))))
+                                (int 2))
+                          (int 3))
+                    (int 5))
+              ) (int -25) "higher order call")
+   ; STATUS: PASSED
+   (check-equal?
+    (eval-exp (call (fun "a" "b" (ifzero (var "b") (int 3)
+                                         (mlet* (list (cons "b" (add (var "b") (int -1)))) (add (int 1) (call (var "a") (var "b"))))
+                                         )) (int 2))
+              )(int 5) "complex recursive call 2")
 
-
-(check-equal?
- (eval-exp (call (call (call (fun "a" "b" (fun "x" "y" (fun "w" "r" (neg (mult (add (var "b") (var "y")) (var "r"))))))
-                       (int 2))
-                       (int 3))
-                       (int 5))
-            ) (int -25) "higher order call")
-
-(check-equal?
- (eval-exp (call (fun "a" "b" (ifzero (var "b") (int 3)
-                                      (mlet* (list (cons "b" (add (var "b") (int -1)))) (add (int 1) (call (var "a") (var "b"))))
-                                      )) (int 2))
-             )(int 5) "complex recursive call 2")
-
-   
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (call (int 1) (int 2)))) "call exception")
    
-   ; else
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (list (int 1) (int 2)))) "bad expression exception")
 
    ; ifmunit
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifmunit (munit) (add (int 1)(int 2)) (add (int 3)(int 4)))) (int 3) "ifmunit true")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifmunit (int 0) (add (int 1)(int 2)) (add (int 3)(int 4)))) (int 7) "ifmunit false")
    
    ; mlet*
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet* (list (cons "x" (int 1)) (cons "y" (int 2))) (add (var "x")(var "y"))))
                  (int 3) "normal mlet* evaluation")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet* (list (cons "x" (int 1))) (var "x")))
                  (int 1) "single variable mlet* evaluation")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mlet* (list (cons "x" (int 1)) (cons "x" (int 2))) (var "x")))
                  (int 2) "shadowing mlet* evaluation")
   
    ; ifeq
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifeq (int 1) (int 1) (int 2) (int 3)))
                  (int 2) "simple ifeq true evaluation")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifeq (int 0) (int 1) (int 2) (int 3)))
                  (int 3) "simple ifeq false evaluation")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifeq (add (int 1)(int 1)) (int 2) (int 2) (int 3)))
                  (int 2) "complex ifeq true evaluation")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (ifeq (add (int 1)(int 1)) (int 1) (int 2) (int 3)))
                  (int 3) "complex ifeq false evaluation")
 
    ; numex-map
+   ; STATUS: PASSED
    (check-equal? (eval-exp
                   (call (call numex-map (fun null "x" (add (int 1) (var "x"))))
                    (apair (int 1) (apair (int 2) (munit)))))
                  (apair (int 2) (apair (int 3) (munit))) "map normal list")
+   ; STATUS: PASSED
    (check-equal? (eval-exp
                   (call (call numex-map (fun null "x" (add (int 1) (var "x"))))
                    (apair (int 1) (munit))))
                  (apair (int 2) (munit)) "map single item list")
+   ; STATUS: PASSED
    (check-equal? (eval-exp
                   (call (call numex-map (fun null "x" (add (int 1) (var "x"))))
                    (munit)))
