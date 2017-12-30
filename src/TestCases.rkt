@@ -212,19 +212,25 @@
    ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (add (int 3) (munit)))) "add exception")
 
-; mult
- (check-equal? (eval-exp (mult (int 5) (int -4))) (int -20) "simple mult")
+   ; mult
+   ; STATUS: PASSED
+   (check-equal? (eval-exp (mult (int 5) (int -4))) (int -20) "simple mult")
+   ; STATUS: PASSED
    (check-equal? (eval-exp (mult (mult (int 3) (int 2)) (mult (int 3) (int 4)))) (int 72) "complex mult")
+   ; STATUS: PASSED
    (check-exn #rx"numex" (lambda () (eval-exp (mult (int 3) (munit)))) "mult exception")
 
    
    ; int
+   ; STATUS: PASSED
    (check-equal? (eval-exp (int 5)) (int 5) "int evaluation")
    
    ; munit
+   ; STATUS: PASSED
    (check-equal? (eval-exp (munit)) (munit) "munit evaluation")
    
    ; closure
+   ; STATUS: PASSED
    (check-equal? (eval-exp (closure '() (fun null "x" (var "x"))))
                  (closure '() (fun null "x" (var "x"))) "closure evaluation")
    
