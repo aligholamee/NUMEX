@@ -53,8 +53,9 @@
 
 ; The helper function of the eval-exp
 (define (eval-under-env e env)
-  (cond [(var? e) 
-         (envlookup env (var-string e))]
+  (cond [(var? e)
+         (cond [(string? (var-string e))(envlookup env (var-string e))]
+               [true (error (format "Dude! Variable contains string!"))])]
         
         ; Addition
         [(add? e) 
@@ -99,8 +100,9 @@
            [(string? (ifzero-e1 e)) (error (format "ifzero bad argument"))]
            [true (let ([v1 (eval-under-env (ifzero-e1 e) env)])
                    (cond
-                     [(eq? (int-num v1) 0) (eval-under-env (ifzero-e2 e) env)]
-                     [true (eval-under-env (ifzero-e3 e) env)]))])]
+                     [(int? v1) (cond [(eq? (int-num v1) 0) (eval-under-env (ifzero-e2 e) env)]
+                                      [true (eval-under-env (ifzero-e3 e) env)])]
+                     [true (error (format "Dude! Argument won't be evaluated to an integer!"))]))])]
         
         ; If greater condition
         [(ifgthan? e)

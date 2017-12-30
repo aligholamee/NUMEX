@@ -53,29 +53,32 @@
               (lambda () (eval-exp (islthan (int 2) (int "a"))))
               "islthan bad argument")
 
-
+   
    (check-exn exn:fail?
               (lambda () (eval-exp (ifzero (munit) (int 2) (int 3))))
               "ifzero bad argument")
 
-
+   ; STATUS: PASSED
    (check-exn exn:fail?
               (lambda () (eval-exp (var munit)))
               "var bad argument")
-
-(check-exn exn:fail?
+   ; STATUS: PASSED
+   (check-exn exn:fail?
               (lambda () (eval-exp (var (int 2))))
               "var bad argument 2")
    
-   ;when it should raise an error
+   ; when it should raise an error
+   ; STATUS: PASSED
    (check-exn exn:fail?
               (lambda () (eval-exp (add (int 2) (munit))))
               "add bad argument")
 
+   ; STATUS: PASSED
    (check-exn exn:fail?
               (lambda () (eval-exp (mult (munit) (int 3))))
               "mult bad argument")
 
+   ; STATUS: PASSED
    (check-exn exn:fail?
               (lambda () (eval-exp (neg (munit))))
               "neg bad argument")
