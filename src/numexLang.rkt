@@ -218,7 +218,9 @@
 (define numex-map (fun "final" "func" (fun "map" "list" (ifeq (ismunit (var "list")) (int 1) (munit)
                                                            (apair (call (var "func") (first (var "list"))) (call (var "map") (second(var "list"))))))))
 ; numex-mapAddn
-;(define numex-mapAddn (mlet "i" ? (numex-map (add (var "i") (
+;(define numex-mapAddn (numex-map (add (var "i") (
+(define numex-mapAddN (fun null "i" (fun null "someList" (call (call numex-map (fun "addition"  "x" (add (var "x") (var "i")))) (var "someList")))))
+
 
 
 

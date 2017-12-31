@@ -87,11 +87,11 @@
    
    ; STATUS: FAILED
    ;(check-equal? (numexlist->racketlist
-    ;              (eval-exp (call (call numex-mapAddN (int 9))
-     ;                             (racketlist->numexlist 
-      ;                             (list (int 10) (int 9) (int 15))))))
-       ;          (list (int 19) (int 18) (int 24))
-        ;         "provided combined test using problems 1, 2, and 4")
+                  (eval-exp (call (call numex-mapAddN (int 9))
+                                 (racketlist->numexlist 
+                                   (list (int 10) (int 9) (int 15))))))
+                 (list (int 19) (int 18) (int 24))
+                 "provided combined test using problems 1, 2, and 4")
 
    ; STATUS: FAILED
    ;(test-equal? "Numex list -> Racket list #1"
