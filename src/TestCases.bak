@@ -205,12 +205,14 @@
 ; add
    (check-equal? (eval-exp (add (int 3) (int 4))) (int 7) "simple add")
    (check-equal? (eval-exp (add (add (int 1) (int 2)) (add (int 3) (int 4)))) (int 10) "complex add")
-   (check-exn #rx"numex" (lambda () (eval-exp (add (int 3) (munit)))) "add exception")
+   (check-exn exn:fail?
+              (lambda () (eval-exp (add (int 3) (munit)))
+              "add exception")
 
 ; mult
  (check-equal? (eval-exp (mult (int 5) (int -4))) (int -20) "simple mult")
    (check-equal? (eval-exp (mult (mult (int 3) (int 2)) (mult (int 3) (int 4)))) (int 72) "complex mult")
-   (check-exn #rx"numex" (lambda () (eval-exp (mult (int 3) (munit)))) "mult exception")
+   (check-exn exn:fail? (lambda () (eval-exp (mult (int 3) (munit)))) "mult exception")
 
    
    ; int
@@ -226,7 +228,7 @@
    ; mlet and var
    (check-equal? (eval-exp (mlet "x" (add (int 1) (int 1)) (var "x"))) (int 2) "mlet and var 1")
    (check-equal? (eval-exp (mlet "x" (int 1) (var "x"))) (int 1) "mlet and var 2")
-   (check-exn #rx"unbound" (lambda () (eval-exp (var "x"))) "var exception")
+   (check-exn exn:fail? (lambda () (eval-exp (var "x"))) "var exception")
    
    ; fun
    (check-equal? (eval-exp (fun null "x" (var "x")))
@@ -241,7 +243,7 @@
    (check-equal? (eval-exp (ifgthan (int 2) (int 1) (int 3) (int 4))) (int 3) "simple ifgthan, true")
    (check-equal? (eval-exp (ifgthan (add (int 0)(int 2)) (add (int 1) (int 0)) (int 3) (int 4))) (int 3) "complex ifgthan, true")
    (check-equal? (eval-exp (ifgthan (int 2) (int 1) (add (int 1)(int 2)) (int 4))) (int 3) "complex ifgthan, true 2")
-   (check-exn #rx"numex" (lambda () (eval-exp (ifgthan "1" (int 2) (int 3) (int 4)))) "ifgthan exception")
+   (check-exn exn:fail? (lambda () (eval-exp (ifgthan "1" (int 2) (int 3) (int 4)))) "ifgthan exception")
 
    ; ifzero
    (check-equal? (eval-exp (ifzero (int 1) (int 2) (int 3))) (int 3) "simple ifzero, false")
@@ -250,7 +252,7 @@
    (check-equal? (eval-exp (ifzero (int 0) (int 4) (int 3) )) (int 4) "simple ifzero, true")
    (check-equal? (eval-exp (ifzero (mult (int 0)(int 2)) (add (int 1) (int 0)) (int 3))) (int 1) "complex ifzero, true")
    (check-equal? (eval-exp (ifzero (int 0) (add (int 1)(int 2)) (int 4))) (int 3) "complex ifzero, true 2")
-   (check-exn #rx"numex" (lambda () (eval-exp (ifzero "1" (int 2) (int 3) ))) "ifzero exception")
+   (check-exn exn:fail? (lambda () (eval-exp (ifzero "1" (int 2) (int 3) ))) "ifzero exception")
    
    ; apair
    (check-equal? (eval-exp (apair (int 1) (int 1))) (apair (int 1) (int 1)) "int apair")
@@ -260,12 +262,12 @@
    ; first
    (check-equal? (eval-exp (first (apair (int 1) (int 2)))) (int 1) "simple first")
    (check-equal? (eval-exp (mlet "x" (apair (int 1) (int 2)) (first (var "x")))) (int 1) "mlet and first")
-   (check-exn #rx"numex" (lambda () (eval-exp (first (add (int 1) (int 2))))) "first exception")
+   (check-exn exn:fail? (lambda () (eval-exp (first (add (int 1) (int 2))))) "first exception")
    
    ; second
    (check-equal? (eval-exp (second (apair (int 1) (int 2)))) (int 2) "second evaluation")
    (check-equal? (eval-exp (mlet "x" (apair (int 1) (int 2)) (second (var "x")))) (int 2) "mlet and second")
-   (check-exn #rx"numex" (lambda () (eval-exp (second (add (int 1) (int 2))))) "second exception")
+   (check-exn exn:fail? (lambda () (eval-exp (second (add (int 1) (int 2))))) "second exception")
    
    ; ismunit
    (check-equal? (eval-exp (ismunit (munit))) (int 1) "simple ismunit true")
@@ -316,10 +318,10 @@
              )(int 5) "complex recursive call 2")
 
    
-   (check-exn #rx"numex" (lambda () (eval-exp (call (int 1) (int 2)))) "call exception")
+   (check-exn exn:fail? (lambda () (eval-exp (call (int 1) (int 2)))) "call exception")
    
    ; else
-   (check-exn #rx"numex" (lambda () (eval-exp (list (int 1) (int 2)))) "bad expression exception")
+   (check-exn exn:fail? (lambda () (eval-exp (list (int 1) (int 2)))) "bad expression exception")
 
    ; ifmunit
    (check-equal? (eval-exp (ifmunit (munit) (add (int 1)(int 2)) (add (int 3)(int 4)))) (int 3) "ifmunit true")

@@ -65,7 +65,7 @@
                     (int? v2))
                (int (+ (int-num v1) 
                        (int-num v2)))
-               (error "NUMEX addition applied to non-number")))]
+               (error "numex addition applied to non-number")))]
         
         ; Multiplication
         [(mult? e)
@@ -75,28 +75,31 @@
                     (int? v2))
                (int (* (int-num v1)
                        (int-num v2)))
-               (error "NUMEX multiplication applied to non-number")))]
+               (error "numex multiplication applied to non-number")))]
         
         ; Negation
         [(neg? e)
          (let ([v1 (eval-under-env (neg-e1 e) env)])
            (if (int? v1) (int (- (int-num v1)))
-               (error "NUMEX negation applied to non-number")))]
+               (error "numex negation applied to non-number")))]
         
         ; Integer value
-        [(int? e) e]
+        [(int? e)
+         (cond
+           [(integer? (int-num e)) e]
+           [true (error (format "Dude! Wrong thing in int!"))])]
 
         ; Is less than comparison
         [(islthan? e)
          (let ([v1 (eval-under-env (islthan-e1 e) env)]
                [v2 (eval-under-env (islthan-e2 e) env)])
-          (cond
-            [(integer? (int-num v1)) (cond
-                                   [(integer? (int-num v2)) (cond
-                                                          [(< (int-num v1) (int-num v2)) (int 1)]
-                                                          [true (int 0)])
-                                   [true (error (format "Dude! islthan bad second argument"))]])
-            [true (error (format "Dude! islthan bad first argument"))]]))]
+           (cond
+             [(int? v1) (cond
+                          [(int? v2) (cond
+                                       [(< (int-num v1) (int-num v2)) (int 1)]
+                                       [true (int 0)])]
+                          [true (error (format "Dude! islthan bad second argument"))])]
+             [true (error (format "Dude! islthan bad first argument!"))]))]
         
         ; Is zero condition
         [(ifzero? e)
@@ -131,7 +134,7 @@
                                        (let ([evaluatedActual (eval-under-env (call-actual e) env)])
                                          (eval-under-env (fun-body functionDeclaration) (cons (cons (fun-formal functionDeclaration) evaluatedActual)
                                                                                           (cons (cons (fun-nameopt functionDeclaration) funClosure) (closure-env funClosure))))))]
-              [true (error (format "Dude! Pass a closure in call!"))]))]   
+              [true (error (format "Dude! numex Pass a closure in call!"))]))]   
 
         ; apair handler
         [(apair? e)
