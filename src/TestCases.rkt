@@ -116,10 +116,10 @@
    (check-equal? (racketlist->numexlist '()) (munit) "empty racketlist")
    
    ; numexlist->racketlist
-   ; STATUS: FAILED
+   ; STATUS: PASSED
    (check-equal? (numexlist->racketlist (apair 1 (apair 2 (apair 3 (apair 4 (munit))))))
                   '(1 2 3 4) "simple numexlist")
-   ; STATUS: FAILED
+   ; STATUS: PASSED
    (check-equal? (numexlist->racketlist (munit)) '() "empty numexlist")
    
 
