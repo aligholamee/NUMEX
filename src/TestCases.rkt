@@ -85,18 +85,18 @@
              (lambda () (eval-exp (add (int 2) (int 3))))
               "add suitable arguments")
    
-   ; STATUS: FAILED
-   ;(check-equal? (numexlist->racketlist
+   ; STATUS: PASSED
+   (check-equal? (numexlist->racketlist
                   (eval-exp (call (call numex-mapAddN (int 9))
                                  (racketlist->numexlist 
                                    (list (int 10) (int 9) (int 15))))))
                  (list (int 19) (int 18) (int 24))
                  "provided combined test using problems 1, 2, and 4")
 
-   ; STATUS: FAILED
-   ;(test-equal? "Numex list -> Racket list #1"
-    ;(list (int 3) (int 4) (int 9))
-    ;(numexlist->racketlist (apair (int 3) (apair (int 4) (apair (int 9) (munit))))))
+   ; STATUS: PASSED
+   (test-equal? "Numex list -> Racket list #1"
+    (list (int 3) (int 4) (int 9))
+    (numexlist->racketlist (apair (int 3) (apair (int 4) (apair (int 9) (munit))))))
 
    ; STATUS: PASSED
    (test-equal? "numex list -> Racket list #2"
