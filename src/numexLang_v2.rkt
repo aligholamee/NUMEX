@@ -51,6 +51,14 @@
   (cond [(null? env) actuals]
         [true (cons (car env) (createNewEnv (cdr env) actuals))]))
 
+;; Creates the essential environment
+(define (generateNewEnv env freevars)
+  (cond [(null? env) null]
+        [true (cond
+                [(set-member? freevars (car (car env))) (cons (car env) (generateNewEnv (cdr env) freevars))]
+                [true (generateNewEnv (cdr env) freevars)])]))
+
+
 ; The helper function of the eval-exp
 (define (eval-under-env-c e env)
   (cond [(var? e)
@@ -123,8 +131,8 @@
                      [true (eval-under-env-c (ifgthan-e4 e) env)]))])]
 
         ; Function declaration
-        [(fun? e)
-         (closure env e)]
+        [(fun-challenge? e)
+         (closure (generateNewEnv env (set-remove (fun-challenge-freevars e) (fun-challenge-nameopt e))) e)]
 
         ; Function call
         [(call? e)
@@ -181,88 +189,79 @@
 ;; We will test this function directly, so it must do
 ;; as described in the assignment
 (define (compute-free-vars e)
-  (letrec (calculate-free-variable (lambda (e)
+  (letrec ([calculate-free-variable (lambda (e)
        (cond
-         [(var? e) (set e)]
-         [(add? e) (set-union (calculate-free-vars (add-e1 e) (add-e2 e)))]
-         [(mult? e) (set-union (calculate-free-vars (mult-e1 e) (mult-e2 e)))]
-         [(neg? e) (set-add (neg-e1 e))]
+         [(var? e) (set (var-string e))]
+         [(add? e) (set-union (calculate-free-variable (add-e1 e)) (calculate-free-variable (add-e2 e)))]
+         [(mult? e) (set-union (calculate-free-variable (mult-e1 e)) (calculate-free-variable (mult-e2 e)))]
+         [(neg? e) (calculate-free-variable (neg-e1 e))]
          [(int? e) (set)]
-         [(islthan? e) (set-union (calculate-free-vars (islthan-e1 e)) (calculate-free-vars (islthan-e2 e)))]
-         [(ifzero? e) (set-union (calculate-free-vars (ifzero-e1 e)) (calculate-free-vars (ifzero-e2 e)) (calculate-free-vars (ifzero-e3 e)))]
-         [(ifgthan? e) (set-union (calculate-free-vars (ifgthan-e1 e)) (calculate-free-vars (ifzero-e2 e)) (calculate-free-vars (ifzero-e3 e)) (calculate-free-vars (ifgthan-e4 e)))]
-         [(fun? e) (set-remove (set-add (calculate-free-vars (fun-body e))) (fun-formal e))]
-         [(call? e) (set-union (calculate-free-vars (call-funexp e)) (calculate-free-vars (call-actual e)))]
-         [(apair? e) (set-union (calculate-free-vars (apair-e1 e)) (calculate-free-vars (apair-e2 e)))]
-         [(first? e) (set-add (calculate-free-vars (first-e1 e)))]
-         [(second? e) (set-add (calculate-free-vars (first-e2 e)))]
-         [(ismunit? e) (set-add (calculate-free-vars (ismunit-e e)))]
+         [(islthan? e) (set-union (calculate-free-variable (islthan-e1 e)) (calculate-free-variable (islthan-e2 e)))]
+         [(ifzero? e) (set-union (calculate-free-variable (ifzero-e1 e)) (calculate-free-variable (ifzero-e2 e)) (calculate-free-variable (ifzero-e3 e)))]
+         [(ifgthan? e) (set-union (calculate-free-variable (ifgthan-e1 e)) (calculate-free-variable (ifgthan-e2 e)) (calculate-free-variable (ifgthan-e3 e)) (calculate-free-variable (ifgthan-e4 e)))]
+         [(fun? e) (set-remove (set-remove (calculate-free-variable (fun-body e)) (fun-formal e)) (fun-nameopt e))]
+         [(call? e) (set-union (calculate-free-variable (call-funexp e)) (calculate-free-variable (call-actual e)))]
+         [(apair? e) (set-union (calculate-free-variable (apair-e1 e)) (calculate-free-variable (apair-e2 e)))]   
+         [(first? e) (calculate-free-variable (first-e1 e))]
+         [(second? e) (calculate-free-variable (second-e2 e))]
+         [(ismunit? e) (calculate-free-variable (ismunit-e e))]
          [(munit? e) (set)]
-         [(mlet? e) (set-remove (set-add (calculate-free-vars (mlet-e2 e))) (mlet-s e))]
+         [(mlet? e) (set-union (calculate-free-variable (mlet-e1 e)) (set-remove (calculate-free-variable (mlet-e2 e)) (mlet-s e)))]
          [(closure? e) (set)]
-         )))
-    
-    (freeVarsSet (calculate-free-variable e))
-    
-        (cond [(var? e) ]
+         ))])
+   
+         (letrec ([generate-exp (lambda (e)                              
+                                  (cond [(var? e) e]
         
-              ; Addition
-              [(add? e) ]
+                                        ; Addition
+                                        [(add? e) e]
         
-              ; Multiplication
-              [(mult? e) ]
+                                        ; Multiplication
+                                        [(mult? e) e]
         
-              ; Negation
-              [(neg? e) ]
+                                        ; Negation
+                                        [(neg? e) e]
         
-              ; Integer value
-              [(int? e) ]
+                                        ; Integer value
+                                        [(int? e) e]
 
-              ; Is less than comparison
-              [(islthan? e) ]
+                                        ; Is less than comparison
+                                        [(islthan? e) e]
         
-              ; Is zero condition
-              [(ifzero? e) ]
+                                        ; Is zero condition
+                                        [(ifzero? e) e]
         
-              ; If greater condition
-              [(ifgthan? e) ]
+                                        ; If greater condition
+                                        [(ifgthan? e) e]
 
-              ; Function declaration
-              [(fun? e) ]
+                                        ; Function declaration
+                                        [(fun? e) (fun-challenge (fun-nameopt e) (fun-formal e) (generate-exp (fun-body e)) (calculate-free-variable e))]
 
-              ; Function call
-              [(call? e) ]   
+                                        ; Function call
+                                        [(call? e) (call (generate-exp (call-funexp e)) (generate-exp (call-actual e)))]   
 
-              ; apair handler
-              [(apair? e) ]
+                                        ; apair handler
+                                        [(apair? e) e]
 
-              ; First and Second handler
-              [(first? e) ]
+                                        ; First and Second handler
+                                        [(first? e) e]
 
-              [(second? e) ]
+                                        [(second? e) e]
 
-              ; ismunit handler
-              [(ismunit? e) ]
+                                        ; ismunit handler
+                                        [(ismunit? e) e]
 
-              ; munit
-              [(munit? e) ]
+                                        ; munit
+                                        [(munit? e) e]
 
-              ; mlet handler
-              [(mlet? e) ]
+                                        ; mlet handler
+                                        [(mlet? e) (mlet (mlet-s e) (generate-exp (mlet-e1 e)) (generate-exp (mlet-e2 e)))]
 
-              ; Closure handler
-              [(closure? e) e]
-
-
-
-
-
-    )
-
-
-        
-        
-        [#t (error (format "bad NUMEX expression: ~v" e))]))
+                                        ; Closure handler
+                                        [(closure? e) e]
+    ))])
+           
+           (generate-exp e))))
 
 ;; Do NOT change this
 (define (eval-exp-c e)
@@ -275,13 +274,14 @@
 
 ;; Macro #1
 ;(define (ifmunit e1 e2 e3) (cond [(equal? (ismunit e1) (int 1)) e2] [true e3]))
-(define (ifmunit e1 e2 e3) (cond [(eq? (munit? e1) #t) e2] [true e3]))
+;(define (ifmunit e1 e2 e3) (cond [(eq? (munit? e1) #t) e2] [true e3]))
+(define (ifmunit e1 e2 e3) (ifzero (ismunit e1) e2 e3))
 
 ;(struct mlet (s e1 e2)  #:transparent)
 ;; Macro #2
 ;(define (mlet* pairList finalExp) (mlet (car) (cons env)) )
 ;(define (mlet* pairList finalExp)(call (fun "generateList" "List" (cond [(null? (var "List")) finalExp] [true (mlet (car (car pairList)) (cdr (car pairList)) (call (var "generateList") (cdr (var "List"))))])) finalExp))
-(define (mlet* pairList finalExp)(cond [(null? pairList) (mlet "finalExpResult" (munit) finalExp)] [true (mlet (car (car pairList)) (cdr (car pairList)) (mlet* (cdr pairList) finalExp))]))
+(define (mlet* pairList finalExp)(cond [(null? pairList) finalExp] [true (mlet (car (car pairList)) (cdr (car pairList)) (mlet* (cdr pairList) finalExp))]))
                                                                                  
 (define program (fun "adderFunction" "someVariable" (add (int 1) (var "someVariable"))))
 (define program2 (mlet "amoo" (int 5) (add (int 1) (var "amoo"))))
